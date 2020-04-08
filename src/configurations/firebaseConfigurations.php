@@ -16,12 +16,12 @@ class firebaseConfigurations extends abstractServiceConfigurations {
      * @throws configurationException
      */
     public function __construct() {
-        if (!($this->key = getenv('MINIMALISM_SERVICES_FIREBASE_KEY')) !== false) {
+        if (!($this->key = getenv('MINIMALISM_SERVICES_FIREBASE_KEY'))) {
             throw new configurationException('firebase', 'MINIMALISM_SERVICES_FIREBASE_KEY is a required configuration');
         }
 
-        if (!($this->url = getenv('MINIMALISM_SERVICES_FIREBASE_URL')) !== false) {
-            throw new configurationException('firebase', 'MINIMALISM_SERVICES_FIREBASE_URL is a required configuration');
+        if (!($this->url = getenv('MINIMALISM_SERVICES_FIREBASE_URL'))) {
+            $this->url = 'https://fcm.googleapis.com/fcm/send';
         }
     }
 }
