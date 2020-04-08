@@ -1,12 +1,12 @@
 {
   "name": "carlonicora/minimalism-service-firebase",
   "description": "Firebase service for minimalism",
-  "version": "1.0.0-beta1",
+  "version": "1.0.0",
   "homepage": "https://carlonicora.com",
   "time": "2020-04-05",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
@@ -22,6 +22,8 @@
   },
   "require": {
     "php": "^7.4",
+    "ext-curl": "*",
+    "ext-json": "*",
     "carlonicora/minimalism": "~10.0"
   }
 }
