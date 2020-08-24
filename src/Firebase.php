@@ -1,21 +1,22 @@
 <?php
-namespace carlonicora\minimalism\services\firebase;
+namespace CarloNicora\Minimalism\Services\Firebase;
 
-use carlonicora\minimalism\core\services\abstracts\abstractService;
-use carlonicora\minimalism\core\services\factories\servicesFactory;
-use carlonicora\minimalism\core\services\interfaces\serviceConfigurationsInterface;
-use carlonicora\minimalism\services\firebase\configurations\firebaseConfigurations;
+use CarloNicora\Minimalism\Core\Services\Abstracts\AbstractService;
+use CarloNicora\Minimalism\Core\Services\Factories\ServicesFactory;
+use CarloNicora\Minimalism\Core\Services\Interfaces\ServiceConfigurationsInterface;
+use CarloNicora\Minimalism\Services\Firebase\Configurations\FirebaseConfigurations;
+use JsonException;
 
-class firebase extends abstractService {
-    /** @var firebaseConfigurations  */
-    private firebaseConfigurations $configData;
+class Firebase extends AbstractService {
+    /** @var FirebaseConfigurations  */
+    private FirebaseConfigurations $configData;
 
     /**
      * firebase constructor.
-     * @param serviceConfigurationsInterface $configData
-     * @param servicesFactory $services
+     * @param ServiceConfigurationsInterface $configData
+     * @param ServicesFactory $services
      */
-    public function __construct(serviceConfigurationsInterface $configData, servicesFactory $services) {
+    public function __construct(ServiceConfigurationsInterface $configData, ServicesFactory $services) {
         parent::__construct($configData, $services);
 
         /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
@@ -26,6 +27,7 @@ class firebase extends abstractService {
      * @param string $deviceId
      * @param array $data
      * @return array
+     * @throws JsonException
      */
     public function sendMessage(string $deviceId, array $data): array {
         $fields = [
