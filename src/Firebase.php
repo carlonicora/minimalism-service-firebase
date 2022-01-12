@@ -1,5 +1,5 @@
 <?php
-namespace Phlow\Minimalism\Api\Services\Firebase;
+namespace CarloNicora\Minimalism\Services\Firebase;
 
 use CarloNicora\Minimalism\Abstracts\AbstractService;
 use JsonException;
