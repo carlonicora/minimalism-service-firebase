@@ -15,7 +15,6 @@ class Firebase extends AbstractService
         private string $MINIMALISM_SERVICES_FIREBASE_KEY,
         private string $MINIMALISM_SERVICES_FIREBASE_URL
     ) {
-        parent::__construct();
     }
 
     /**
