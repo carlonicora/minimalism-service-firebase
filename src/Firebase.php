@@ -18,13 +18,17 @@ class Firebase extends AbstractService
     }
 
     /**
+     * @param string $deviceId
      * @param array $data
      * @return array
      * @throws JsonException
      */
-    public function sendMessage(
-        array $data,
-    ): array {
+    public function sendMessage(string $deviceId, array $data): array {
+        $fields = [
+            'to'=>$deviceId,
+            'notification'=>$data
+        ];
+
         $headers = [
             'Content-Type:application/json',
             'Authorization:key='. $this->MINIMALISM_SERVICES_FIREBASE_KEY
@@ -35,7 +39,7 @@ class Firebase extends AbstractService
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data, JSON_THROW_ON_ERROR));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($fields, JSON_THROW_ON_ERROR));
 
         $result = curl_exec($curl);
         $error = curl_error($curl);
