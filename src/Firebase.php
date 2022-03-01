@@ -53,20 +53,27 @@ class Firebase extends AbstractService
         $apnsConfig = ApnsConfig::fromArray([
             'payload' => [
                 'aps' => [
+                    'mutable-content' => 1,
                     'category' => $action,
                 ],
+            ],
+            'fcm_options' => [
+                'image' => $imageUrl,
             ],
         ]);
         $androidConfig = AndroidConfig::fromArray([
             'notification' => [
                 'title' => $title,
                 'body' => $body,
-                'link' => $action,
+                'image' => $imageUrl,
             ],
         ]);
         $webPushConfig = WebPushConfig::fromArray([
-            'fcm_options' => [
-                'link' => $action,
+            'notification' => [
+                'click_action' => $action,
+            ],
+            'headers' => [
+                'image' => $imageUrl,
             ],
         ]);
 
@@ -79,7 +86,11 @@ class Firebase extends AbstractService
                 body: $body,
                 imageUrl: $imageUrl,
             ),
-        )->withApnsConfig($apnsConfig)
+        )->withData([
+            'link' => $action,
+            'image' => $imageUrl,
+        ])
+            ->withApnsConfig($apnsConfig)
             ->withAndroidConfig($androidConfig)
             ->withWebPushConfig($webPushConfig);
 
