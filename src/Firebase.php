@@ -3,8 +3,6 @@ namespace CarloNicora\Minimalism\Services\Firebase;
 
 use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Services\Path;
-use Exception;
-use JsonException;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Factory;
@@ -20,12 +18,12 @@ class Firebase extends AbstractService
      * firebase constructor.
      * @param Path $path
      * @param string $MINIMALISM_SERVICES_FIREBASE_KEY
-     * @param string $MINIMALISM_SERVICES_FIREBASE_URL
+     * @param string $MINIMALISM_SERVICES_FIREBASE_PROJECT
      */
     public function __construct(
         private Path $path,
         private string $MINIMALISM_SERVICES_FIREBASE_KEY,
-        private string $MINIMALISM_SERVICES_FIREBASE_URL
+        private string $MINIMALISM_SERVICES_FIREBASE_PROJECT
     ) {
     }
 
@@ -48,13 +46,15 @@ class Firebase extends AbstractService
     ): array
     {
         $factory = (new Factory())
-            ->withServiceAccount($this->path->getRoot() . $this->MINIMALISM_SERVICES_FIREBASE_KEY)
-            ->withProjectId($this->MINIMALISM_SERVICES_FIREBASE_URL);
+            ->withServiceAccount($this->path->getRoot() . DIRECTORY_SEPARATOR . $this->MINIMALISM_SERVICES_FIREBASE_KEY)
+            ->withProjectId($this->MINIMALISM_SERVICES_FIREBASE_PROJECT);
         $messaging = $factory->createMessaging();
 
         $apnsConfig = ApnsConfig::fromArray([
-            'aps' => [
-                'category' => $action,
+            'payload' => [
+                'aps' => [
+                    'category' => $action,
+                ],
             ],
         ]);
         $androidConfig = AndroidConfig::fromArray([
@@ -71,15 +71,15 @@ class Firebase extends AbstractService
         ]);
 
         $message = CloudMessage::withTarget(
-                type: 'token',
-                value: $deviceId,
-            )->withNotification(
-                Notification::create(
-                    title: $title,
-                    body: $body,
-                    imageUrl: $imageUrl,
-                ),
-            )->withApnsConfig($apnsConfig)
+            type: 'token',
+            value: $deviceId,
+        )->withNotification(
+            Notification::create(
+                title: $title,
+                body: $body,
+                imageUrl: $imageUrl,
+            ),
+        )->withApnsConfig($apnsConfig)
             ->withAndroidConfig($androidConfig)
             ->withWebPushConfig($webPushConfig);
 
