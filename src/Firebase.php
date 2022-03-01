@@ -71,6 +71,7 @@ class Firebase extends AbstractService
         $webPushConfig = WebPushConfig::fromArray([
             'notification' => [
                 'click_action' => $action,
+                'icon' => $imageUrl,
             ],
             'headers' => [
                 'image' => $imageUrl,
