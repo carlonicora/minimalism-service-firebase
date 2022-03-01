@@ -61,7 +61,7 @@ class Firebase extends AbstractService
             'notification' => [
                 'title' => $title,
                 'body' => $body,
-                'click_action' => $action,
+                'link' => $action,
             ],
         ]);
         $webPushConfig = WebPushConfig::fromArray([
