@@ -2,16 +2,28 @@
 namespace CarloNicora\Minimalism\Services\Firebase;
 
 use CarloNicora\Minimalism\Abstracts\AbstractService;
+use CarloNicora\Minimalism\Services\Path;
+use Exception;
 use JsonException;
+use Kreait\Firebase\Exception\FirebaseException;
+use Kreait\Firebase\Exception\MessagingException;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\AndroidConfig;
+use Kreait\Firebase\Messaging\ApnsConfig;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Kreait\Firebase\Messaging\WebPushConfig;
 
 class Firebase extends AbstractService
 {
     /**
      * firebase constructor.
+     * @param Path $path
      * @param string $MINIMALISM_SERVICES_FIREBASE_KEY
      * @param string $MINIMALISM_SERVICES_FIREBASE_URL
      */
     public function __construct(
+        private Path $path,
         private string $MINIMALISM_SERVICES_FIREBASE_KEY,
         private string $MINIMALISM_SERVICES_FIREBASE_URL
     ) {
@@ -19,41 +31,58 @@ class Firebase extends AbstractService
 
     /**
      * @param string $deviceId
-     * @param array $data
+     * @param string $title
+     * @param string $body
+     * @param string $action
+     * @param string|null $imageUrl
      * @return array
-     * @throws JsonException
+     * @throws FirebaseException
+     * @throws MessagingException
      */
-    public function sendMessage(string $deviceId, array $data): array {
-        $fields = [
-            'to'=>$deviceId,
-            'notification'=>$data
-        ];
+    public function sendMessage(
+        string $deviceId,
+        string $title,
+        string $body,
+        string $action,
+        ?string $imageUrl=null,
+    ): array
+    {
+        $factory = (new Factory())
+            ->withServiceAccount($this->path->getRoot() . $this->MINIMALISM_SERVICES_FIREBASE_KEY)
+            ->withProjectId($this->MINIMALISM_SERVICES_FIREBASE_URL);
+        $messaging = $factory->createMessaging();
 
-        $headers = [
-            'Content-Type:application/json',
-            'Authorization:key='. $this->MINIMALISM_SERVICES_FIREBASE_KEY
-        ];
+        $apnsConfig = ApnsConfig::fromArray([
+            'aps' => [
+                'category' => $action,
+            ],
+        ]);
+        $androidConfig = AndroidConfig::fromArray([
+            'notification' => [
+                'title' => $title,
+                'body' => $body,
+                'click_action' => $action,
+            ],
+        ]);
+        $webPushConfig = WebPushConfig::fromArray([
+            'fcm_options' => [
+                'link' => $action,
+            ],
+        ]);
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $this->MINIMALISM_SERVICES_FIREBASE_URL);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($fields, JSON_THROW_ON_ERROR));
+        $message = CloudMessage::withTarget(
+                type: 'token',
+                value: $deviceId,
+            )->withNotification(
+                Notification::create(
+                    title: $title,
+                    body: $body,
+                    imageUrl: $imageUrl,
+                ),
+            )->withApnsConfig($apnsConfig)
+            ->withAndroidConfig($androidConfig)
+            ->withWebPushConfig($webPushConfig);
 
-        $result = curl_exec($curl);
-        $error = curl_error($curl);
-        $responseCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        curl_close($curl);
-
-        if (!empty($error)) {
-            return ['failure' => [0 => [$error]]];
-        }
-
-        if ($responseCode >= 400) {
-            return ['failue' => [0 => [$responseCode . ': ' . $result]]];
-        }
-
-        return json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        return $messaging->send($message);
     }
 }

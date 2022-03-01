@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-firebase",
   "description": "Firebase service for minimalism",
-  "version": "2.0.4",
+  "version": "3.0.0-beta1",
   "homepage": "https://carlonicora.com",
   "time": "2020-04-05",
   "license": "MIT",
@@ -24,6 +24,7 @@
     "php": ">=8.1",
     "ext-curl": "*",
     "ext-json": "*",
-    "carlonicora/minimalism": "~13.0"
+    "carlonicora/minimalism": "~13.0",
+    "kreait/firebase-php": "~6.1"
   }
 }
